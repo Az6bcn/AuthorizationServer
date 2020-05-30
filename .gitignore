@@ -408,3 +408,5 @@ ASALocalRun/
 appsettings.json
 
 appsettings.Development.json
+
+updateUI.ps1
