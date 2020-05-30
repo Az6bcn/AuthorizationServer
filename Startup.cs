@@ -18,11 +18,13 @@ namespace IdentityServer
     {
         public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        public static IConfiguration StaticIConfiguration { get; private set; }
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Environment = environment;
             Configuration = configuration;
+            StaticIConfiguration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
