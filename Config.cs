@@ -22,7 +22,7 @@ namespace IdentityServer
             };
 
         /* when these apiResources are requested : they map to array of scope claims in the access_token,
-         * when the scopes that belongs to any of these apiResources  are requested : they map to array claims in the access_token.
+         * when the scopes that belongs to any of these apiResources  are requested : they map to claims in the access_token.
          */
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource> {
@@ -38,7 +38,7 @@ namespace IdentityServer
                             DisplayName = "Rea, Write and Delete your data",
                             Description = "Read, Write and Deelete access to restaurantAPI",
                             /* List of associated user claim types that should be included in the access token.
-                             *  return these claims in the access_token , in addition to the sub
+                             *  return these claims in the daccess_token , in addition to the sub
                              */
                             UserClaims = new List<string>{
                                 JwtClaimTypes.Profile,
@@ -115,9 +115,13 @@ namespace IdentityServer
                     ClientId = "restaurantReactClient",
                     ClientName = "Restaurantes Carta Online",
                     ClientUri = GetClientConfig["ClientUri"],
+                    Description = "Restaurantes Carta Online",
                     AllowedGrantTypes = GrantTypes.Code,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AllowAccessTokensViaBrowser = false,
                     RequirePkce = true,
                     AccessTokenLifetime = TimeSpan.FromMinutes(15).Seconds,
+                    AllowedCorsOrigins = new List<string>{GetClientConfig["AllowedCorsOrigins"] },
                     RedirectUris = new List<string> {GetClientConfig["RedirectUri"] },
                     PostLogoutRedirectUris = new List<string> {GetClientConfig["PostLogOutUri"] },
                     AllowedScopes = new List<string>

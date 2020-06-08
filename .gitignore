@@ -411,3 +411,5 @@ appsettings.Development.json
 
 updateUI.ps1
 tempkey.rsa
+
+Migrations/
