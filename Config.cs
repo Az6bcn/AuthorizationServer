@@ -13,6 +13,7 @@ namespace IdentityServer
 {
     public static class Config
     {
+        // Identity Resource that I want to protect
         // when these identity scopes are requested : they map to claims in the id_token
         public static IEnumerable<IdentityResource> Ids =>
             new IdentityResource[]
@@ -20,7 +21,7 @@ namespace IdentityServer
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile()
             };
-
+        // API Resources that I want to protect and the scopes needed (that can be requested) to access them.
         /* when these apiResources are requested : they map to array of scope claims in the access_token,
          * when the scopes that belongs to any of these apiResources  are requested : they map to claims in the access_token.
          */
@@ -30,8 +31,10 @@ namespace IdentityServer
                     Name = "restaurantAPI",
                     DisplayName = "restaurant API",
                     Description = "restaurant API resource",
+                    // Api Resource scope: defines the type of access you can request from the API Resource. i.e you will need to have the scope(s) to be able to access the API and we could limit what a user can do based on the type of access they have (scope),the API itsself will challenge and check.
                     Scopes = new List<Scope>
                     {
+                        // scope: represents what you are allowed to do.
                         new Scope
                         {
                             Name = "restaurantAPI.fullaccess",
@@ -106,7 +109,7 @@ namespace IdentityServer
                 }
             };
 
-
+        // Register the clients that can access the API resources I am protecting, i.e software that can request tokens(id_token: for authenticating user or/and token: access token for accessing a resources (API)) from IdentityServer.
         public static IEnumerable<Client> Clients =>
             new List<Client>
             {
@@ -124,10 +127,13 @@ namespace IdentityServer
                     AllowedCorsOrigins = new List<string>{GetClientConfig["AllowedCorsOrigins"] },
                     RedirectUris = new List<string> {GetClientConfig["RedirectUri"] },
                     PostLogoutRedirectUris = new List<string> {GetClientConfig["PostLogOutUri"] },
+                    // my resources scopes that can be requested by this client (Identity and API scopes), can request scopes for both if the flow permits it.
                     AllowedScopes = new List<string>
                     {
+                        // Identity Resources scopes
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        // APIs Resources scopes that I want them to request and when requested this will automatically add the resource they belong to to the audience property of the token.
                         "restaurantAPI.fullaccess",
                         "restaurantAPI.readonly",
                         "restaurantAPI.writeonly",
