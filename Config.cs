@@ -106,6 +106,35 @@ namespace IdentityServer
                             }
                         }
                     }
+                },
+                new ApiResource{
+                    Name = "unigradesApi",
+                    DisplayName = "unigrades API",
+                    Description = "unigrades API resource",
+                    // Api Resource scope: defines the type of access you can request from the API Resource. i.e you will need to have the scope(s) to be able to access the API and we could limit what a user can do based on the type of access they have (scope),the API itsself will challenge and check.
+                    Scopes = new List<Scope>
+                    {
+                        // scope: represents what you are allowed to do.
+                        new Scope
+                        {
+                            Name = "unigradesapi.full_access",
+                            DisplayName = "Rea, Write and Delete your data",
+                            Description = "Read, Write and Deelete access to restaurantAPI",
+                            /* List of associated user claim types that should be included in the access token.
+                             *  return these claims in the daccess_token , in addition to the sub
+                             */
+                            UserClaims = new List<string>{
+                                JwtClaimTypes.Profile,
+                                JwtClaimTypes.Name,
+                                JwtClaimTypes.GivenName,
+                                "canAdd",
+                                "canEdit",
+                                "canRead",
+                                "canDelete",
+                                "role"
+                            }
+                        }
+                    }
                 }
             };
 
@@ -113,13 +142,13 @@ namespace IdentityServer
         public static IEnumerable<Client> Clients =>
             new List<Client>
             {
-                new Client
+                new Client  // implicit flow
                 {
                     ClientId = "restaurantReactClient",
                     ClientName = "Restaurantes Carta Online",
                     ClientUri = GetClientConfig["ClientUri"],
                     Description = "Restaurantes Carta Online",
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.Implicit,
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AllowAccessTokensViaBrowser = false,
                     RequirePkce = true,
@@ -175,8 +204,87 @@ namespace IdentityServer
                         "restaurantAPI.writeonly",
                         "restaurantAPI.deleteonly"
                     }
-                }
+                },
+                new Client // code + pkce flow
+                {
+                    ClientId = "restaurantAngularClient",
+                    ClientName = "Restaurantes Carta Online",
+                    ClientUri = GetClientConfig["ClientUri"],
+                    Description = "Restaurantes Carta Online",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+                    RequirePkce = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AllowAccessTokensViaBrowser = true,
+                    // AccessTokenLifetime = TimeSpan.FromMinutes(15).Seconds,
+                    AllowedCorsOrigins = new List<string>{GetClientConfig["AllowedCorsOrigins"] },
+                    RedirectUris = new List<string> {GetClientConfig["RedirectUri"] },
+                    PostLogoutRedirectUris = new List<string> {GetClientConfig["PostLogOutUri"] },
+                    // my resources scopes that can be requested by this client (Identity and API scopes), can request scopes for both if the flow permits it.
+                    AllowedScopes = new List<string>
+                    {
+                        // Identity Resources scopes
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        // APIs Resources scopes that I want them to request and when requested this will automatically add the resource they belong to to the audience property of the token.
+                        "restaurantAPI.fullaccess",
+                        "restaurantAPI.readonly",
+                        "restaurantAPI.writeonly",
+                        "restaurantAPI.deleteonly"
+                    }
+                },
 
+                {
+                // SPA client using code flow + pkce
+                new Client
+                {
+                    ClientId = "unigrades-ng001",
+                    ClientName = "Angular SPA UniGrades-NG",
+                    ClientUri = "http://localhost:4200/about",
+                    RequireClientSecret = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    AllowPlainTextPkce = false,
+                    AccessTokenLifetime = 900,
+                    AccessTokenType = AccessTokenType.Jwt,
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = true, // implement IprofileService to add user claims in access jwt token
+                    AllowAccessTokensViaBrowser = false,
+                    Description = "SPA Application to manage and track University grades",
+                    IncludeJwtId = true,
+                    RequireConsent = true,
+                    RedirectUris =  {"http://localhost:4200/auth-callback"},
+                    PostLogoutRedirectUris = { "http://localhost:4200/signout-callback-oidc" },
+                    AllowedCorsOrigins = { "http://localhost:4200" },
+                    AllowedScopes = new List<string>{ "openid", "profile", "unigradesapi.full_access" }
+                }
+               },
+
+                {
+                    // SPA client using code flow + pkce
+                    new Client
+                    {
+                        ClientId = "unigrades_ng_container",
+                        ClientName = "Angular SPA UniGrades-NG",
+                        ClientUri = "http://web_ng:4200/about",
+                        RequireClientSecret = false,
+                        AllowedGrantTypes = GrantTypes.Code,
+                        RequirePkce = true,
+                        AllowPlainTextPkce = false,
+                        AccessTokenLifetime = 900,
+                        AccessTokenType = AccessTokenType.Jwt,
+                        AlwaysIncludeUserClaimsInIdToken = true,
+                        AlwaysSendClientClaims = true, // implement IprofileService to add user claims in access jwt token
+                        AllowAccessTokensViaBrowser = false,
+                        Description = "SPA Application to manage and track University grades",
+                        IncludeJwtId = true,
+                        RequireConsent = true,
+                        RedirectUris =  {"http://web_ng:4200/auth-callback"},
+                        PostLogoutRedirectUris = { "http://web_ng:4200/signout-callback-oidc" },
+                        AllowedCorsOrigins = { "http://web_ng:4200" },
+                        AllowedScopes = new List<string>{ "openid", "profile", "unigradesapi.full_access" }
+                    }
+                }
             };
 
         public static IConfiguration GetClientConfig => Startup.StaticIConfiguration.GetSection("RestaurantClient");

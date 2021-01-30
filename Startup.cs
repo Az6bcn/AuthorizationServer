@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,9 +36,28 @@ namespace IdentityServer
         {
             services.AddControllersWithViews();
 
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            string connectionString;
+            if (Environment.IsDevelopment())
+            {
+                connectionString = Configuration.GetConnectionString("DefaultConnection");    
+            }
+            else
+            {
+                connectionString = Configuration.GetConnectionString("ContainerDefaultConnection");
+            }
+            Console.WriteLine($"C O N N E C T I O N S T R I N G  A U T H   S E R V E R: {connectionString}");
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            // check if db exists and use Database.Migrate(): To apply any migrations, will create the database if does not already exist.
+            var dbContext = services.BuildServiceProvider().GetService<ApplicationDbContext>();
+            // check if database exist
+            if (!dbContext.Database.GetService<IRelationalDatabaseCreator>().Exists())
+            {
+                // Automatically perform database migrations: creates db if not already exist
+                dbContext.Database.Migrate();
+            }
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -114,7 +135,6 @@ namespace IdentityServer
 
                     new SeedUsers(context, logger, userManager).Seed().Wait();
                 }
-
             }
         }
     }

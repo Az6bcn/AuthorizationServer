@@ -1,5 +1,13 @@
 {
   "profiles": {
+    "Container": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Container"
+      },
+      "applicationUrl": "http://0.0.0.0:5001"
+    },
     "IdentityServer": {
       "commandName": "Project",
       "launchBrowser": true,
@@ -10,7 +18,7 @@
     },
     "SelfHost": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

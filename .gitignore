@@ -413,3 +413,5 @@ updateUI.ps1
 tempkey.rsa
 
 Migrations/
+
+docker-compose.yml
