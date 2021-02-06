@@ -1,8 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-    </PropertyGroup>
+      <UserSecretsId>6651f5dc-c264-462d-886e-a04b945c5605</UserSecretsId>
+  </PropertyGroup>
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'Container' " />
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'SelfHost' " />
     <ItemGroup>
